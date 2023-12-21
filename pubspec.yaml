@@ -1,0 +1,46 @@
+name: voip_station
+description: A new Flutter project.
+
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.1.5 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.2
+  direct_dialer: ^2.0.0
+  firebase_core: ^2.24.2
+  cloud_firestore: ^4.13.6
+  dart_ping: ^9.0.1
+  flutter_webrtc: ^0.9.47
+  socket_io_client: ^2.0.3+1
+  wakelock: ^0.6.2
+  flutter_background: ^1.2.0
+  shared_preferences: ^2.2.2
+
+dependency_overrides:
+  intl: ^0.18.0
+  analyzer: ^5.0.0
+  build_runner_core: ^7.2.11
+  win32: ^5.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^2.0.0
+  build_runner: ^2.4.7
+  chopper_generator: ^4.0.5
+  json_serializable: ^6.2.0
+  json_annotation: ^4.8.1
+
+
+
+flutter:
+
+  uses-material-design: true
