@@ -24,7 +24,7 @@ class _WebAppState extends State<WebApp> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if(kIsWeb){
+      if(kIsWeb || kDebugMode){
         final base = Uri.base;
         setState(() {
           phone = base.queryParameters['phone'] ?? '8610346904';
@@ -33,6 +33,7 @@ class _WebAppState extends State<WebApp> {
         sdk.join();
         add(phone);
       }
+
     });
     super.initState();
   }
@@ -42,46 +43,76 @@ class _WebAppState extends State<WebApp> {
     return  ValueListenableBuilder(
       valueListenable: sdk,
       builder: (context, value, child) {
-        return Scaffold(
-          body: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
+        final size = MediaQuery.of(context).size;
+        bool landscape = size.width > size.height;
+
+        final people = Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
                 margin: const EdgeInsets.all(32),
                 height: 80,
-                  child: const FittedBox(child: CircleAvatar(child: Icon(Icons.person_rounded)))),
-              Text(phone, style: Theme.of(context).textTheme.headlineLarge,),
+                child: const FittedBox(child: CircleAvatar(child: Icon(Icons.person_rounded)))),
+            Text(phone, style: Theme.of(context).textTheme.headlineLarge,),
+          ],
+        );
+        final actions = Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Row(),
+            if(value.voice) ...[
+              IconButton(onPressed: (){
+                sdk.toggleAudio(false);
+              }, icon: const Icon(Icons.mic_off)),
+              Text('Mute', style: Theme.of(context).textTheme.labelMedium,),
+            ] else ...[
+              IconButton(
+                  style: IconButton.styleFrom(
+                    backgroundColor: Theme.of(context).primaryColor,
+                  ),
+                  onPressed: (){
+                    sdk.toggleAudio(true);
+                  }, icon: const Icon(Icons.mic, color: Colors.white,)),
+              Text('Unmute', style: Theme.of(context).textTheme.labelMedium,),
+            ],
+            const SizedBox(height: 32,),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              child: IconButton(
+                  style: IconButton.styleFrom(
+                    backgroundColor: Colors.red.shade800,
+                    elevation: 8,
+                    shadowColor: Colors.red.shade800,
+                  ),
+                  iconSize: 32,
+                  onPressed: (){
+                    sdk.leave();
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const CallEndedPage()));
+                  }, icon: const Icon(Icons.call_end_rounded, color: Colors.white)),
+            )
+          ],
+        );
+
+
+
+        return Scaffold(
+          body: landscape ? Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(child: people),
+              const Column(),
+              const VerticalDivider(),
+              actions
+            ],
+          ): Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(child: people),
               const Spacer(),
-              const Row(),
-              if(value.voice) ...[
-                IconButton(onPressed: (){
-                  sdk.toggleAudio(false);
-                }, icon: const Icon(Icons.mic_off)),
-                Text('Mute', style: Theme.of(context).textTheme.labelMedium,),
-              ] else ...[
-                IconButton(
-                    style: IconButton.styleFrom(
-                      backgroundColor: Theme.of(context).primaryColor,
-                    ),
-                    onPressed: (){
-                  sdk.toggleAudio(true);
-                }, icon: const Icon(Icons.mic, color: Colors.white,)),
-                Text('Unmute', style: Theme.of(context).textTheme.labelMedium,),
-              ],
-              Padding(
-                padding: const EdgeInsets.all(32),
-                child: IconButton(
-                    style: IconButton.styleFrom(
-                      backgroundColor: Colors.red.shade800,
-                      elevation: 8,
-                      shadowColor: Colors.red.shade800,
-                    ),
-                    iconSize: 32,
-                    onPressed: (){
-                      sdk.leave();
-                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const CallEndedPage()));
-                    }, icon: const Icon(Icons.call_end_rounded, color: Colors.white)),
-              )
+              actions,
+              const SizedBox(height: 32,),
             ],
           ),
         );

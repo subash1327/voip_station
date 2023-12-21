@@ -19,6 +19,12 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if(kDebugMode){
+        Local.station = 'KwylZgIWpnYHP6DZFhJn';
+        Local.user = User(id: 'dialer');
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const WebApp()));
+        return;
+      }
       if(kIsWeb){
         Local.station = 'KwylZgIWpnYHP6DZFhJn';
         Local.user = User(id: 'dialer');
